@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary: #030014;
+  --color-secondary: #0f0d23;
+  --color-btn: #2c2666;
+  --color-btn-hover: #3a3388;
+  --color-shadow: #cecefb1a;
+  --shadow-card: inset 0 0 4px 0 var(--color-shadow);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-primary);
+    color: white;
+  }
+}
+
+@utility flex-center {
+  @apply flex items-center justify-center;
+}
