@@ -15,7 +15,7 @@ function App() {
   } = useTodos();
 
   return (
-    <main className="max-w-100 w-full flex-center min-h-svh px-2 mx-auto">
+    <main className="max-w-130 w-full flex-center min-h-svh px-2 mx-auto">
       {isLoading ? (
         <Spinner />
       ) : errorMessage ? (
