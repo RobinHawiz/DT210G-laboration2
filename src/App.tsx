@@ -8,8 +8,10 @@ function App() {
     isLoading,
     errorMessage,
     updatingTodoIds,
+    deletingTodoIds,
     todoErrorById,
     todoUpdateHandler,
+    todoDeleteHandler,
   } = useTodos();
 
   return (
@@ -22,7 +24,9 @@ function App() {
         <TodoList
           todoList={todoList}
           updatingTodoIds={updatingTodoIds}
+          deletingTodoIds={deletingTodoIds}
           todoUpdateHandler={todoUpdateHandler}
+          todoDeleteHandler={todoDeleteHandler}
           todoErrorById={todoErrorById}
         />
       )}

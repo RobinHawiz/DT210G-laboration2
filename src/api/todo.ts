@@ -15,3 +15,10 @@ export async function updateTodo(id: number, status: Status) {
   };
   await request(`${API_BASE_URL}/todos/${id}`, options);
 }
+
+export async function deleteTodo(id: number) {
+  const options = {
+    method: "DELETE",
+  };
+  await request(`${API_BASE_URL}/todos/${id}`, options);
+}

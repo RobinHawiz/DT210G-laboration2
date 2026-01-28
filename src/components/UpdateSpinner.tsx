@@ -1,4 +1,4 @@
-function SmallSpinner() {
+function UpdateSpinner() {
   return (
     <div role="status">
       <svg
@@ -21,4 +21,4 @@ function SmallSpinner() {
   );
 }
 
-export default SmallSpinner;
+export default UpdateSpinner;

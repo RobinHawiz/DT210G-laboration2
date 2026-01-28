@@ -1,23 +1,36 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Status, Todo } from "@/types/todo";
 import Delay from "@/utils/delay";
-import { getTodos, updateTodo } from "@/api/todo";
+import { deleteTodo, getTodos, updateTodo } from "@/api/todo";
 
 export default function useTodos() {
   const [todoList, setTodoList] = useState<Array<Todo>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [updatingTodoIds, setUpdatingTodoIds] = useState(new Set<number>());
+  const [deletingTodoIds, setDeletingTodoIds] = useState(new Set<number>());
   const [todoErrorById, setTodoErrorById] = useState(new Map<number, string>());
+
+  const removeTodoErrorById = (id: number) => {
+    setTodoErrorById((prev) => {
+      const next = new Map(prev);
+      next.delete(id);
+      return next;
+    });
+  };
+
+  const addTodoErrorById = (id: number, errorMessage: string) => {
+    setTodoErrorById((prev) => {
+      const next = new Map(prev);
+      next.set(id, errorMessage);
+      return next;
+    });
+  };
 
   const todoUpdateHandler = useCallback(
     async (id: number, nextStatus: Status) => {
       // Clear error for this todo
-      setTodoErrorById((prev) => {
-        const next = new Map(prev);
-        next.delete(id);
-        return next;
-      });
+      removeTodoErrorById(id);
 
       // Mark todo as updating
       setUpdatingTodoIds((prev) => {
@@ -25,7 +38,9 @@ export default function useTodos() {
         next.add(id);
         return next;
       });
+
       await Delay(700);
+
       try {
         await updateTodo(id, nextStatus);
         setTodoList((prev) =>
@@ -43,12 +58,9 @@ export default function useTodos() {
         console.error(
           `Error updating todo: ${err instanceof Error ? err.message : err}`,
         );
+
         // Attach error to this todo
-        setTodoErrorById((prev) => {
-          const next = new Map(prev);
-          next.set(id, "Error updating todo. Please try again later.");
-          return next;
-        });
+        addTodoErrorById(id, "Error updating todo. Please try again later.");
       } finally {
         // Unmark updating
         setUpdatingTodoIds((prev) => {
@@ -60,6 +72,39 @@ export default function useTodos() {
     },
     [],
   );
+
+  const todoDeleteHandler = useCallback(async (id: number) => {
+    // Clear error for this todo
+    removeTodoErrorById(id);
+
+    // Mark todo as being deleted
+    setDeletingTodoIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+
+    await Delay(700);
+
+    try {
+      await deleteTodo(id);
+      setTodoList((prev) => prev.filter((el) => el.id !== id));
+    } catch (err) {
+      console.error(
+        `Error deleting todo: ${err instanceof Error ? err.message : err}`,
+      );
+
+      // Attach error to this todo
+      addTodoErrorById(id, "Error deleting todo. Please try again later.");
+    } finally {
+      // Unmark deleting
+      setDeletingTodoIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const todoFetchHandler = async () => {
@@ -85,7 +130,9 @@ export default function useTodos() {
     isLoading,
     errorMessage,
     updatingTodoIds,
+    deletingTodoIds,
     todoErrorById,
     todoUpdateHandler,
+    todoDeleteHandler,
   };
 }
