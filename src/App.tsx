@@ -16,22 +16,24 @@ function App() {
   } = useTodos();
 
   return (
-    <main className="max-w-130 w-full flex-center flex-col min-h-svh px-2 mx-auto">
+    <main className="max-w-130 w-full flex-col px-2 py-10 mx-auto">
       <TodoForm />
-      {isLoading ? (
-        <Spinner />
-      ) : errorMessage ? (
-        <p className="text-red-500">{errorMessage}</p>
-      ) : (
-        <TodoList
-          todoList={todoList}
-          updatingTodoIds={updatingTodoIds}
-          deletingTodoIds={deletingTodoIds}
-          todoUpdateHandler={todoUpdateHandler}
-          todoDeleteHandler={todoDeleteHandler}
-          todoErrorById={todoErrorById}
-        />
-      )}
+      <div className="w-full flex-center min-h-20">
+        {isLoading ? (
+          <Spinner />
+        ) : errorMessage ? (
+          <p className="text-red-500">{errorMessage}</p>
+        ) : (
+          <TodoList
+            todoList={todoList}
+            updatingTodoIds={updatingTodoIds}
+            deletingTodoIds={deletingTodoIds}
+            todoUpdateHandler={todoUpdateHandler}
+            todoDeleteHandler={todoDeleteHandler}
+            todoErrorById={todoErrorById}
+          />
+        )}
+      </div>
     </main>
   );
 }
