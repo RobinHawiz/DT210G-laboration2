@@ -2,13 +2,29 @@ import { labels } from "@/constants/todo";
 import { Status } from "@/types/todo";
 import React, { useState } from "react";
 
+const STATUS_VALUES = Object.values<Status>(Status) as readonly Status[];
+
 function TodoForm() {
   const [todoTitle, setTodoTitle] = useState("");
-  const [todoStatus, setTodoStatus] = useState(labels[Status.NotStarted]);
+  const [todoStatus, setTodoStatus] = useState<Status>(Status.NotStarted);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    // Validation
+    if (todoTitle.length < 3 || todoTitle.length > 100) {
+      setError("Description must be 3–100 characters.");
+      return;
+    }
+
+    if (!STATUS_VALUES.includes(todoStatus)) {
+      setError("Please choose a valid status.");
+      return;
+    }
   };
+
   return (
     <form
       className="w-full mb-5 flex gap-2 flex-wrap items-center"
@@ -20,6 +36,9 @@ function TodoForm() {
         placeholder="Todo description..."
         value={todoTitle}
         onChange={(e) => setTodoTitle(e.target.value)}
+        minLength={3}
+        maxLength={100}
+        required
       />
       <div className="flex gap-2">
         <select
@@ -27,11 +46,11 @@ function TodoForm() {
           name="status"
           id="status"
           value={todoStatus}
-          onChange={(e) => setTodoStatus(e.target.value)}
+          onChange={(e) => setTodoStatus(e.target.value as Status)}
         >
-          {Object.entries(labels).map(([key, value]) => (
-            <option className="bg-secondary" key={key} value={key}>
-              {value}
+          {STATUS_VALUES.map((status) => (
+            <option className="bg-secondary" key={status} value={status}>
+              {labels[status]}
             </option>
           ))}
         </select>
@@ -42,6 +61,7 @@ function TodoForm() {
           Add
         </button>
       </div>
+      {error && <p className="text-red-500">{error}</p>}
     </form>
   );
 }
