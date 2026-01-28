@@ -20,9 +20,9 @@ function TodoList({
         <TodoCard
           key={todo.id}
           todo={todo}
-          updatingTodoIds={updatingTodoIds}
-          todoErrorById={todoErrorById}
-          todoUpdateHandler={todoUpdateHandler}
+          isUpdating={updatingTodoIds.has(todo.id)}
+          errorMessage={todoErrorById.get(todo.id) ?? ""}
+          onUpdate={todoUpdateHandler}
         />
       ))}
     </ul>
