@@ -18,9 +18,10 @@ function TodoForm({ todoAddHandler }: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    const title = todoTitle.trim();
 
     // Validation
-    if (todoTitle.length < 3 || todoTitle.length > 100) {
+    if (title.length < 3 || title.length > 100) {
       setError("Description must be 3–100 characters.");
       return;
     }
@@ -33,7 +34,7 @@ function TodoForm({ todoAddHandler }: Props) {
     // Form submission
     try {
       setIsLoading(true);
-      await todoAddHandler({ title: todoTitle, status: todoStatus });
+      await todoAddHandler({ title, status: todoStatus });
       setTodoTitle("");
       setTodoStatus(Status.NotStarted);
     } catch (err) {
