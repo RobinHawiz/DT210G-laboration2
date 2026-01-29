@@ -9,6 +9,10 @@ async function request<T = void>(url: string, options: RequestInit = {}) {
     return (await response.json()) as T;
   }
 
+  if (response.status === 201) {
+    return response.headers.get("Location") as T;
+  }
+
   return undefined;
 }
 

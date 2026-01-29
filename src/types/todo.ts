@@ -4,6 +4,8 @@ export type Todo = {
   status: Status;
 };
 
+export type TodoPayload = Omit<Todo, "id">;
+
 export enum Status {
   NotStarted = "NOT_STARTED",
   InProgress = "IN_PROGRESS",

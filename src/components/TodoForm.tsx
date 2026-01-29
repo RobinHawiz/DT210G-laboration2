@@ -1,15 +1,21 @@
 import { labels } from "@/constants/todo";
-import { Status } from "@/types/todo";
+import { Status, type TodoPayload } from "@/types/todo";
 import React, { useState } from "react";
+import UpdateSpinner from "@/components/UpdateSpinner";
+
+type Props = {
+  todoAddHandler: (payload: TodoPayload) => Promise<void>;
+};
 
 const STATUS_VALUES = Object.values<Status>(Status) as readonly Status[];
 
-function TodoForm() {
+function TodoForm({ todoAddHandler }: Props) {
   const [todoTitle, setTodoTitle] = useState("");
   const [todoStatus, setTodoStatus] = useState<Status>(Status.NotStarted);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
@@ -22,6 +28,21 @@ function TodoForm() {
     if (!STATUS_VALUES.includes(todoStatus)) {
       setError("Please choose a valid status.");
       return;
+    }
+
+    // Form submission
+    try {
+      setIsLoading(true);
+      await todoAddHandler({ title: todoTitle, status: todoStatus });
+      setTodoTitle("");
+      setTodoStatus(Status.NotStarted);
+    } catch (err) {
+      console.error(
+        `Error adding todo: ${err instanceof Error ? err.message : err}`,
+      );
+      setError("Error adding todo. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,10 +76,11 @@ function TodoForm() {
           ))}
         </select>
         <button
-          className="cursor-pointer bg-btn hover:bg-btn-hover transition-colors duration-200 ease-in-out px-3 h-12 rounded-lg flex-center"
+          disabled={isLoading}
+          className="cursor-pointer bg-btn hover:bg-btn-hover transition-colors duration-200 ease-in-out px-3 h-12 w-15 rounded-lg flex-center"
           type="submit"
         >
-          Add
+          {isLoading ? <UpdateSpinner /> : "Add"}
         </button>
       </div>
       {error && <p className="text-red-500">{error}</p>}

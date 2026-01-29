@@ -13,11 +13,12 @@ function App() {
     todoErrorById,
     todoUpdateHandler,
     todoDeleteHandler,
+    todoAddHandler,
   } = useTodos();
 
   return (
     <main className="max-w-130 w-full flex-col px-2 py-10 mx-auto">
-      <TodoForm />
+      <TodoForm todoAddHandler={todoAddHandler} />
       <div className="w-full flex-center min-h-20">
         {isLoading ? (
           <Spinner />

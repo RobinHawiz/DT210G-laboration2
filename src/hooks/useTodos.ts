@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import type { Status, Todo } from "@/types/todo";
+import type { Status, Todo, TodoPayload } from "@/types/todo";
 import Delay from "@/utils/delay";
-import { deleteTodo, getTodos, updateTodo } from "@/api/todo";
+import { addTodo, deleteTodo, getTodos, updateTodo } from "@/api/todo";
 
 export default function useTodos() {
   const [todoList, setTodoList] = useState<Array<Todo>>([]);
@@ -106,6 +106,24 @@ export default function useTodos() {
     }
   }, []);
 
+  const todoAddHandler = useCallback(async (payload: TodoPayload) => {
+    await Delay(700);
+    const location = await addTodo(payload);
+
+    if (typeof location !== "string") {
+      throw new Error("Missing Location header");
+    }
+
+    const id = parseInt(location.split("/").pop() as string);
+
+    if (isNaN(id)) {
+      throw new Error(`Invalid Location header: ${location}`);
+    }
+
+    const todo = { ...payload, id };
+    setTodoList((prev) => [todo, ...prev]);
+  }, []);
+
   useEffect(() => {
     const todoFetchHandler = async () => {
       setIsLoading(true);
@@ -134,5 +152,6 @@ export default function useTodos() {
     todoErrorById,
     todoUpdateHandler,
     todoDeleteHandler,
+    todoAddHandler,
   };
 }
